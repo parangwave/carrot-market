@@ -1,3 +1,24 @@
+/* 컴파일러는 실제로 여기로 와서 이 directive들을 생성된 class name으로 대체함 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* base style: app의 모든 component의 base style */
+@layer base {
+  a {
+    @apply text-blue-500;
+  }
+}
+
+/* utility style: app의 모든 곳에서 사용할 수 있는 class */
+@layer utilities {
+  .text-bigger-hello {
+    @apply text-3xl font-semibold;
+  }
+}
+
+/* utility style: 특정 component의 class를 추상화 */
+@layer components {
+  .btn {
+    @apply rounded-sexy-name mt-tomato h-10 w-full bg-black text-white;
+  }
+}
