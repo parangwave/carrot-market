@@ -21,6 +21,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  // plug-in은 base & utilities & components layer를 확장
+  plugins: [require("@tailwindcss/forms")],
 }
 export default config
