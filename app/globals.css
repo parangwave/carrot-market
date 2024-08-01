@@ -18,7 +18,7 @@
 
 /* utility style: 특정 component의 class를 추상화 */
 @layer components {
-  .btn {
-    @apply rounded-sexy-name mt-tomato h-10 w-full bg-black text-white;
+  .primary-btn {
+    @apply h-10 w-full rounded-md bg-orange-500 text-white transition-colors hover:bg-orange-400;
   }
 }
