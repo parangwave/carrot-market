@@ -19,6 +19,6 @@
 /* utility style: 특정 component의 class를 추상화 */
 @layer components {
   .primary-btn {
-    @apply h-10 w-full rounded-md bg-orange-500 text-white transition-colors hover:bg-orange-400;
+    @apply w-full rounded-md bg-orange-500 text-center font-medium text-white transition-colors hover:bg-orange-400;
   }
 }
