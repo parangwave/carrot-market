@@ -1,3 +1,5 @@
+"use client"
+
 // components
 // w/ import alias "@/"
 import FormInput from "@/components/form-input"
@@ -5,6 +7,17 @@ import FormButton from "@/components/form-btn"
 import SocialLogin from "@/components/social-login"
 
 export default function Login() {
+  const onClick = async () => {
+    const response = await fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify({
+        username: "nico",
+        password: "1234",
+      }),
+    })
+    console.log(await response.json())
+  }
+
   return (
     <div className="flex flex-col gap-10 px-6 py-8">
       <div className="flex flex-col gap-2 *:font-semibold">
@@ -19,8 +32,10 @@ export default function Login() {
           required
           errors={[]}
         />
-        <FormButton loading={false} text="Create Account" />
       </form>
+      <span onClick={onClick}>
+        <FormButton loading={false} text="Login" />
+      </span>
       <SocialLogin />
     </div>
   )
