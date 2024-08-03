@@ -10,8 +10,11 @@ export default function Login() {
     // auto sending data for BE
     // need name in input to get data from form (network>payload)
     "use server"
-    console.log(formData.get("email"), formData.get("password"))
-    console.log("i run in the server!!")
+    // 사용자가 계속 클릭해서 race condition에 들어가는 것을 방지함
+    // 1. 사용자에게 이 server action이 시간이 좀 걸린다는 것을 알려줌
+    // 2. 버튼을 비활성화
+    await new Promise((resolve) => setTimeout(resolve, 5000))
+    console.log("logged in!")
   }
 
   return (
@@ -35,7 +38,7 @@ export default function Login() {
           required
           errors={[]}
         />
-        <FormButton loading={false} text="Login" />
+        <FormButton text="Log in" />
       </form>
       <SocialLogin />
     </div>
