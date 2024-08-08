@@ -4,10 +4,12 @@ import Input from "@/components/input"
 import Button from "@/components/button"
 
 import { useFormState } from "react-dom"
-import { smsVerification } from "./actions"
+import { smsLogIn } from "./actions"
 
+// 1. 유저에게 전화번호 input만 보여주고 token 보냄
+// 2. 인증번호 input을 보여줌, token 인증
 export default function SMSLogin() {
-  const [state, dispatch] = useFormState(smsVerification, null)
+  const [state, dispatch] = useFormState(smsLogIn, null)
 
   return (
     <div className="flex flex-col gap-10 px-6 py-8">
@@ -22,7 +24,8 @@ export default function SMSLogin() {
           type="number"
           placeholder="Verification code"
           required
-          errors={[]}
+          min={100000}
+          max={999999}
         />
         <Button text="Verify" />
       </form>
