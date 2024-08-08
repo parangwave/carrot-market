@@ -14,8 +14,6 @@ export default function Input({
   // FormInput이 props 뿐만 아니라 input이 받을 수 있는 모든 attrs도 props로 받을 수 있다고 ts에게 알려주기
   // ex. max, min, maxLength, minLength ...
 }: IInputProps & InputHTMLAttributes<HTMLInputElement>) {
-  // console.log(rest)
-
   return (
     <div className="flex flex-col gap-2">
       <input
