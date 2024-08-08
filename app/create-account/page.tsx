@@ -2,8 +2,8 @@
 
 // components
 // w/ import alias "@/"
-import FormInput from "@/components/form-input"
-import FormButton from "@/components/form-btn"
+import Input from "@/components/input"
+import Button from "@/components/button"
 import SocialLogin from "@/components/social-login"
 
 import { createAccount } from "./actions"
@@ -20,36 +20,41 @@ export default function CreateAccount() {
         <h2 className="text-xl">Fill in the form below to join!</h2>
       </div>
       <form action={dispatch} className="flex flex-col gap-3">
-        <FormInput
+        <Input
           name="username"
           type="text"
           placeholder="Username"
           required
           // errors = string arr || null
           errors={state?.fieldErrors.username}
+          minLength={3}
+          maxLength={10}
         />
-        <FormInput
+        <Input
           name="email"
           type="email"
           placeholder="Email"
+          minLength={4}
           required
           errors={state?.fieldErrors.email}
         />
-        <FormInput
+        <Input
           name="password"
           type="password"
           placeholder="Password"
+          minLength={4}
           required
           errors={state?.fieldErrors.password}
         />
-        <FormInput
+        <Input
           name="confirm_password"
           type="password"
           placeholder="Confirm Password"
+          minLength={4}
           required
           errors={state?.fieldErrors.confirm_password}
         />
-        <FormButton text="Create Account" />
+        <Button text="Create Account" />
       </form>
       <SocialLogin />
     </div>

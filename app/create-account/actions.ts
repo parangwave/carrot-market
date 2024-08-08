@@ -31,7 +31,7 @@ const formatSchema = z
         required_error: "Where is my username???",
       })
       .min(3, "Way to short!!!")
-      //.max(10, "That is too looooong!")
+      .max(10, "That is too looooong!")
       .trim()
       .toLowerCase()
       // 1st arg = validate / refine / transform할 항목

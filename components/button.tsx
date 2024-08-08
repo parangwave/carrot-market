@@ -3,11 +3,11 @@
 
 import { useFormStatus } from "react-dom"
 
-interface IFormButtonProps {
+interface IButtonProps {
   text: string
 }
 
-export default function FormButton({ text }: IFormButtonProps) {
+export default function Button({ text }: IButtonProps) {
   // form action을 알려주는 react hook
   // form이 pending인지 & 어떤 데이터가 전송되었는지 알려줌
   // action을 실행하는 form과 같은 곳에서 사용할 수 X, 자동적으로 부모 form 찾음
