@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import CarrotIcon from "./carrot.svg"
+// import "@/lib/db"
 
 export default function Home() {
   return (
