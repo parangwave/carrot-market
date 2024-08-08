@@ -11,6 +11,12 @@ const checkPasswordSame = ({
   confirm_password: string
 }) => password === confirm_password
 
+// 정규표현식 validator
+// 소문자, 대문자, 숫자, 특수문자 일부 포함하는 지
+const passwordRegex = new RegExp(
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*?[#?!@$%^&*-]).+$/
+)
+
 // zod에게 data type, limit을 설명하는 schema 제공
 // len == min 5 ~ max 10
 // schema에서 데이터 유효성 검사를 하고 에러를 발생 시킴
@@ -25,11 +31,22 @@ const formatSchema = z
         required_error: "Where is my username???",
       })
       .min(3, "Way to short!!!")
-      .max(10, "Too looooong")
+      //.max(10, "That is too looooong!")
+      .trim()
+      .toLowerCase()
+      // 1st arg = validate / refine / transform할 항목
+      // 2nd arg = return하는 최종 결과
+      .transform((username) => `🔥 ${username}`)
       .refine(checkUsername, "NO potatoes allowed"), // refine은 check func를 넣을 수 있음
-    email: z.string().email(),
-    password: z.string().min(10),
-    confirm_password: z.string().min(10),
+    email: z.string().email().toLowerCase(),
+    password: z
+      .string()
+      .min(4)
+      .regex(
+        passwordRegex,
+        "Passwords must contain at least one UPPERCASE, lowercase, number and special characters (#?!@$%^&*-)"
+      ),
+    confirm_password: z.string().min(4),
   })
   .refine(checkPasswordSame, {
     message: "Both poasswords must be same!",
@@ -38,8 +55,9 @@ const formatSchema = z
 // all fields validation
 
 export async function createAccount(prevState: any, formData: FormData) {
+  // 검증하기 위해 생성한 obj, never touch it again
+  // b/c 검증되지 않음 && 방금 추가된 transformer에 의해 변환되지 않음
   const data = {
-    // usernameeeeeee: 1, // to cause invalid_type_error
     username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
@@ -53,5 +71,7 @@ export async function createAccount(prevState: any, formData: FormData) {
     // unless flatten(), big error obj
     console.log(result.error.flatten())
     return result.error.flatten() // to form state -> ui
+  } else {
+    console.log(result.data)
   }
 }
