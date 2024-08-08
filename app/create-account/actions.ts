@@ -2,6 +2,12 @@
 
 import { z } from "zod"
 
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_ERROR,
+} from "@/lib/constants"
+
 const checkUsername = (username: string) => !username.includes("potato")
 const checkPasswordSame = ({
   password,
@@ -10,12 +16,6 @@ const checkPasswordSame = ({
   password: string
   confirm_password: string
 }) => password === confirm_password
-
-// 정규표현식 validator
-// 소문자, 대문자, 숫자, 특수문자 일부 포함하는 지
-const passwordRegex = new RegExp(
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*?[#?!@$%^&*-]).+$/
-)
 
 // zod에게 data type, limit을 설명하는 schema 제공
 // len == min 5 ~ max 10
@@ -30,8 +30,6 @@ const formatSchema = z
         invalid_type_error: "Username must be a string!",
         required_error: "Where is my username???",
       })
-      .min(3, "Way to short!!!")
-      .max(10, "That is too looooong!")
       .trim()
       .toLowerCase()
       // 1st arg = validate / refine / transform할 항목
@@ -41,12 +39,9 @@ const formatSchema = z
     email: z.string().email().toLowerCase(),
     password: z
       .string()
-      .min(4)
-      .regex(
-        passwordRegex,
-        "Passwords must contain at least one UPPERCASE, lowercase, number and special characters (#?!@$%^&*-)"
-      ),
-    confirm_password: z.string().min(4),
+      .min(PASSWORD_MIN_LENGTH)
+      .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
+    confirm_password: z.string().min(PASSWORD_MIN_LENGTH),
   })
   .refine(checkPasswordSame, {
     message: "Both poasswords must be same!",

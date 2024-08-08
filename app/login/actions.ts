@@ -1,15 +1,37 @@
 "use server"
 
-export async function handleForm(prevState: any, formData: FormData) {
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_ERROR,
+} from "@/lib/constants"
+import { z } from "zod"
+
+const formSchema = z.object({
+  email: z.string().email().toLowerCase(),
+  password: z
+    .string({
+      required_error: "Password is required",
+    })
+    .min(PASSWORD_MIN_LENGTH)
+    .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
+})
+
+export async function logIn(prevState: any, formData: FormData) {
   // nextjs create route-handler for POST method automatically
   // auto sending data for BE
   // need name in input to get data from form (network>payload)
+  const data = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+  }
 
-  // 사용자가 계속 클릭해서 race condition에 들어가는 것을 방지함
-  // 1. 사용자에게 이 server action이 시간이 좀 걸린다는 것을 알려줌
-  // 2. 버튼을 비활성화
+  const result = formSchema.safeParse(data)
 
-  return {
-    errors: ["wrong password", "password too short"],
+  if (!result.success) {
+    console.log(result.error.flatten())
+    return result.error.flatten()
+  } else {
+    console.log(result.data)
   }
 }
