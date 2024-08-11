@@ -2,6 +2,9 @@
 
 import { z } from "zod"
 import bcrypt from "bcrypt"
+import { getIronSession } from "iron-session"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 import {
   PASSWORD_MIN_LENGTH,
@@ -120,6 +123,18 @@ export async function createAccount(prevState: any, formData: FormData) {
       },
     })
     // log the user in
+    // iron-session은 delicious-karrot이라는 쿠키를 가져오거나 쿠키를 가지고 있지 않다면 생성함
+    // cookie안 data를 저장하고 cookie 저장 후, iron-session도 이 데이터를 암호화함
+    // 즉, 사용자가 쿠키의 정보를 수정할 수 없도록 함
+    const cookie = await getIronSession(cookies(), {
+      cookieName: "delicious-karrot",
+      password: process.env.COOKIE_PASSWORD!,
+    })
+    //@ts-ignore
+    // save data in cookie
+    cookie.id = user.id
+    await cookie.save()
     // redirect "/home"
+    redirect("/profile")
   }
 }
