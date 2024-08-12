@@ -22,34 +22,6 @@ const checkPasswordSame = ({
   confirm_password: string
 }) => password === confirm_password
 
-// check if the email is already used
-const checkUniqueUserName = async (username: string) => {
-  const user = await db.user.findFirst({
-    where: {
-      username,
-    },
-    select: {
-      id: true,
-    },
-  })
-  // if userEmail exists, show an error
-  return !Boolean(user)
-}
-
-const checkUniqueEmail = async (email: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      email,
-    },
-    // ask db to find these infos
-    select: {
-      id: true,
-    },
-  })
-  // if user exists, show an error
-  return Boolean(user) === false
-}
-
 // zod에게 data type, limit을 설명하는 schema 제공
 // len == min 5 ~ max 10
 // schema에서 데이터 유효성 검사를 하고 에러를 발생 시킴
@@ -67,26 +39,63 @@ const formatSchema = z
       .toLowerCase()
       // 1st arg = validate / refine / transform할 항목
       // 2nd arg = return하는 최종 결과
-      // .transform((username) => `🔥 ${username}`)
       // refine 함수는 실행 결과로 true / false가 필요함
-      .refine(checkUniqueUserName, "This username is already taken"),
-    email: z
-      .string()
-      .email()
-      .toLowerCase()
-      .refine(
-        checkUniqueEmail,
-        "There is an account already registered with that email."
-      ),
+      .refine(checkUsername, "No potatoes allowed!"),
+    email: z.string().email().toLowerCase(),
     password: z.string().min(PASSWORD_MIN_LENGTH),
     // .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
     confirm_password: z.string().min(PASSWORD_MIN_LENGTH),
+  })
+  // superRefine
+  // obj를 refine 할 때는 그 obj의 data를 여기로 {} 가져옴
+  .superRefine(async ({ username }, ctx) => {
+    const user = await db.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+      },
+    })
+    if (user) {
+      // zod doesn't know what field occurs an error
+      // so mv error to formErrors
+      ctx.addIssue({
+        code: "custom",
+        message: "This username is already taken",
+        path: ["username"],
+        // no run other refinements
+        fatal: true,
+      })
+      // cease refinement right away
+      return z.NEVER
+    }
+  })
+  .superRefine(async ({ email }, ctx) => {
+    const user = await db.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+      },
+    })
+    if (user) {
+      // zod doesn't know what field occurs an error
+      // so mv error to formErrors
+      ctx.addIssue({
+        code: "custom",
+        message: "This email is already taken",
+        path: ["email"],
+        // no run other refinements
+        fatal: true,
+      })
+      // cease refinement right away
+      return z.NEVER
+    }
   })
   .refine(checkPasswordSame, {
     message: "Both poasswords must be same!",
     path: ["confirm_password"],
   })
-// all fields validation
 
 export async function createAccount(prevState: any, formData: FormData) {
   // 검증하기 위해 생성한 obj, never touch it again
