@@ -10,23 +10,34 @@
 // image 가져올 때, js코드를 다운로드할 때, 브라우저가 css, js 파일 등을 다운받을 때
 // google의 어떤 로봇이 웹 사이트를 볼 때, favicon을 가져와야 할 때
 import { NextRequest, NextResponse } from "next/server"
-import getSession from "./lib/session"
-import { redirect } from "next/dist/server/api-utils"
 
+// middleware를 특정 페이지에서만 실행되도록 하는 법
+// 즉, 특정 request에서 실행되지 않도록
+// 함수 이름은 반드시 middleware
 export async function middleware(request: NextRequest) {
-  //   nextUrl === request의 string을 사용하는, 즉 일반 url의 extension
-  //   console.log(request.nextUrl.pathname)
+  console.log("hello")
 
-  const session = await getSession()
-  console.log(session)
-  //   console.log(request.cookies.getAll())
+  //   const pathname = request.nextUrl.pathname
+  //   if (pathname === "/") {
+  //     // user에게 실제로 제공할 response를 가져옴
+  //     const response = NextResponse.next()
+  //     response.cookies.set("middleware-cookie", "hello!")
+  //     return response
+  //   }
+  //   if (pathname === "/profile") {
+  //     return NextResponse.redirect(new URL("/", request.url))
+  //   }
+}
 
-  if (request.nextUrl.pathname === "/profile") {
-    // return Response.json({
-    //   error: "you are not allowed here!",
-    // })
-
-    // URL(url to redirect, url base)
-    return NextResponse.redirect(new URL("/", request.url))
-  }
+// cookie 설정하는 법
+// user가 특정 행동을 하거나, 특정 페이지로 이동할 때를 위해 cookie 설정하고 싶을 때 有
+// 이름은 반드시 config
+export const config = {
+  // user로 시작하는 모든 단일 url === "/user/:path*"
+  //   matcher: ["/", "/profile", "/create-account", "/user/:path*"],
+  //  api로 시작 or _next/static로 시작 or _next/image로 시작 or favicon.ico
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  //   쉽게 말해 miising안 header들이 없을 때 middleware 실행
+  //   프레임워크가 prefetching을 수행할 때 프레임워크에 의해 설정되는 header
+  //   missing: [{ type: 'header', key: 'x-missing', value: 'prefetch' }],
 }
