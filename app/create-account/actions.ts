@@ -2,8 +2,6 @@
 
 import { z } from "zod"
 import bcrypt from "bcrypt"
-import { getIronSession } from "iron-session"
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import {
@@ -13,6 +11,7 @@ import {
 } from "@/lib/constants"
 
 import db from "@/lib/db"
+import getSession from "@/lib/session"
 
 const checkUsername = (username: string) => !username.includes("potato")
 const checkPasswordSame = ({
@@ -101,7 +100,7 @@ export async function createAccount(prevState: any, formData: FormData) {
   // parse() throws error -> try-catch
   // safeParse() X throws error
   // zod가 모든 refine 함수에 대해 await하도록 하고 싶다면, safeParseSync 쓰기
-  const result = await formatSchema.safeParseAsync(data)
+  const result = await formatSchema.spa(data)
   if (!result.success) {
     // flatten()은 축소된 error obj
     // unless flatten(), big error obj
@@ -126,14 +125,12 @@ export async function createAccount(prevState: any, formData: FormData) {
     // iron-session은 delicious-karrot이라는 쿠키를 가져오거나 쿠키를 가지고 있지 않다면 생성함
     // cookie안 data를 저장하고 cookie 저장 후, iron-session도 이 데이터를 암호화함
     // 즉, 사용자가 쿠키의 정보를 수정할 수 없도록 함
-    const cookie = await getIronSession(cookies(), {
-      cookieName: "delicious-karrot",
-      password: process.env.COOKIE_PASSWORD!,
-    })
+    const session = await getSession()
     //@ts-ignore
-    // save data in cookie
-    cookie.id = user.id
-    await cookie.save()
+    // save data in session
+    // 사용자가 로그인 상태인지 알고 싶다면, getSession으로 session에 id가 있는 지 검사
+    session.id = user.id
+    await session.save()
     // redirect "/home"
     redirect("/profile")
   }
