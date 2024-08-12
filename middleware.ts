@@ -28,6 +28,10 @@ const publicOnlyUrls: Routes = {
 // 즉, 특정 request에서 실행되지 않도록
 // 함수 이름은 반드시 middleware
 // middleware가 edge runtime에서 실행됨 (nodejs x)
+// edge runtime = middleware가 모든 npm 모듈에 액세스할 수 없다는 것
+// 기본적으로 nodejs 내부에서는 실행되지 x, 매우 제한된 버전의 nodejs에서 실행됨
+// request에서 특정 header가 사용 가능한 middleware를 실행하지 않도록 구성할 수 있음
+// ex. prefetch header는 link가 prefetch를 수행할 때 nextjs가 사용하는 것임
 // edge runtime은 일종의 제한된 버전의 nodejs, nodejs API의 경량 버전
 // middleware가 모든 단일 request에 대해 실행되어야 함
 // npm packages === a smaller subset, prisma를 사용할 수 없는 이유
@@ -62,7 +66,7 @@ export const config = {
   // user로 시작하는 모든 단일 url === "/user/:path*"
   //   matcher: ["/", "/profile", "/create-account", "/user/:path*"],
   //  api로 시작 or _next/static로 시작 or _next/image로 시작 or favicon.ico
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
   //   쉽게 말해 miising안 header들이 없을 때 middleware 실행
   //   프레임워크가 prefetching을 수행할 때 프레임워크에 의해 설정되는 header
   //   missing: [{ type: 'header', key: 'x-missing', value: 'prefetch' }],
