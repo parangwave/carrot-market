@@ -14,6 +14,10 @@ import { NextRequest, NextResponse } from "next/server"
 // middleware를 특정 페이지에서만 실행되도록 하는 법
 // 즉, 특정 request에서 실행되지 않도록
 // 함수 이름은 반드시 middleware
+// middleware가 edge runtime에서 실행됨 (nodejs x)
+// edge runtime은 일종의 제한된 버전의 nodejs, nodejs API의 경량 버전
+// middleware가 모든 단일 request에 대해 실행되어야 함
+// npm packages === a smaller subset, prisma를 사용할 수 없는 이유
 export async function middleware(request: NextRequest) {
   console.log("hello")
 
