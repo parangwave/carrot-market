@@ -22,6 +22,8 @@ const publicOnlyUrls: Routes = {
   "/login": true,
   "/sms": true,
   "/create-account": true,
+  "/github/start": true,
+  "/github/complete": true,
 }
 
 // middleware를 특정 페이지에서만 실행되도록 하는 법
