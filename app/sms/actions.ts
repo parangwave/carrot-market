@@ -42,6 +42,8 @@ interface ActionState {
   token: boolean
 }
 
+10 * 10 * 10 * 10 * 10 * 10
+
 async function getToken() {
   const token = crypto.randomInt(100000, 999999).toString()
   // token 중복 ? 다시 생성 or 생성했던 token
