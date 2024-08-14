@@ -1,4 +1,6 @@
-// route 파일로 url의 특정 http method handler를 만들 수 잇다는 것을 기억하자
+// route 파일로 url의 특정 http method handler를 만들 수 있다는 것을 기억하자
+import { redirect } from "next/navigation"
+
 // === API route를 만드는 것. react나 html를 return하고 싶지 않을 때 route.ts를 사용함
 export function GET() {
   // github에 신원 요청
@@ -13,5 +15,5 @@ export function GET() {
   }
   const formattedParams = new URLSearchParams(params).toString()
   const finalUrl = `${baseURL}?${formattedParams}`
-  return Response.redirect(finalUrl)
+  return redirect(finalUrl)
 }
