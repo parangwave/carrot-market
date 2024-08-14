@@ -5,6 +5,7 @@ import { z } from "zod"
 import validator from "validator" // string 유효성 검사 라이브러리
 import { redirect } from "next/navigation"
 import db from "@/lib/db"
+import getSession from "@/lib/session"
 
 // const phoneSchema = z.string().trim().refine(validator.isMobilePhone)
 const phoneSchema = z
@@ -15,9 +16,26 @@ const phoneSchema = z
     "Wrong phone format"
   )
 
+async function tokenExists(token: number) {
+  const exists = await db.sMSToken.findUnique({
+    where: {
+      token: token.toString(),
+    },
+    select: {
+      id: true,
+    },
+  })
+
+  return Boolean(exists)
+}
+
 // transform() = 값 변환
 // coerce() = 타입 강제 변환
-const tokenSchema = z.coerce.number().min(100000).max(999999)
+const tokenSchema = z.coerce
+  .number()
+  .min(100000)
+  .max(999999)
+  .refine(tokenExists, "This token does not exist.")
 
 interface ActionState {
   token: boolean
@@ -51,7 +69,7 @@ export async function smsLogIn(prevState: ActionState, formData: FormData) {
   if (!prevState.token) {
     // result = zod가 phone값을 parse할 때 전달하는 값
     // error나 data를 가지고 있을 수 있는 obj
-    const result = phoneSchema.safeParse(phone)
+    const result = await phoneSchema.spa(phone)
 
     if (!result.success) {
       // whatever we return, it becomes state in useFormState
@@ -100,7 +118,7 @@ export async function smsLogIn(prevState: ActionState, formData: FormData) {
     }
     // when user send phone number to us
   } else {
-    const result = tokenSchema.safeParse(token)
+    const result = await tokenSchema.spa(token)
 
     if (!result.success) {
       return {
@@ -108,7 +126,27 @@ export async function smsLogIn(prevState: ActionState, formData: FormData) {
         error: result.error.flatten(),
       }
     } else {
-      redirect("/")
+      // get the userId of token
+      const token = await db.sMSToken.findUnique({
+        where: {
+          token: result.data.toString(),
+        },
+        select: {
+          id: true,
+          userId: true,
+        },
+      })
+
+      // log the user in
+      const session = await getSession()
+      session.id = token!.userId
+      await session.save()
+      await db.sMSToken.delete({
+        where: {
+          id: token!.id,
+        },
+      })
+      redirect("/profile")
     }
   }
 }
