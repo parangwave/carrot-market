@@ -19,21 +19,15 @@ export default function ListProduct({
 }: ListProductProps) {
   return (
     <Link href={`/products/${id}`} className="flex gap-5">
-      <div>
-        {/* image 크기 지정 필요 */}
-        {/* Layout shift를 방지하는 방법으로 NextJs가 기본적으로 image에 대한 일종의 placeholder를 생성하기 때문 */}
-        {/* image loading을 optimize할 것이고 placeholder 생성 */}
-        {/* 그래서 component or image 주변의 content 위치는 바뀌지 않음 */}
-        <Image width={200} height={200} src={photo} alt={title} />
+      <div className="relative size-28 overflow-hidden rounded-md">
+        <Image fill src={photo} className="object-cover" alt={title} />
       </div>
-      <div className="flex flex-col gap-1">
-        <span className="text-lg text-white">{title}</span>
-        <span className="text-sm text-neutral-400">
+      <div className="flex flex-col gap-1 *:text-white">
+        <span className="text-lg">{title}</span>
+        <span className="text-sm text-neutral-500">
           {formatToTimeAgo(created_at.toString())}
         </span>
-        <span className="text-lg font-semibold text-white">
-          {formatToWon(price)}원
-        </span>
+        <span className="text-lg font-semibold">{formatToWon(price)}원</span>
       </div>
     </Link>
   )

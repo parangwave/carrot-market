@@ -56,10 +56,10 @@ export default async function ProductDetail({
         <div className="size-10 overflow-hidden rounded-full">
           {product.user.avatar !== null ? (
             <Image
-              width={40}
-              height={40}
-              src={product.user.avatar}
-              alt={product.user.username}
+              fill
+              src={product.photo}
+              alt={product.title}
+              className="object-cover"
             />
           ) : (
             <UserIcon />
