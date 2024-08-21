@@ -57,7 +57,7 @@ export default async function ProductDetail({
           {product.user.avatar !== null ? (
             <Image
               fill
-              src={product.photo}
+              src={`${product.photo}/public`}
               alt={product.title}
               className="object-cover"
             />
