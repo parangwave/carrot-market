@@ -4,6 +4,7 @@ import { z } from "zod"
 import db from "@/lib/db"
 import getSession from "@/lib/session"
 import { redirect } from "next/navigation"
+import { productSchema } from "./schema"
 
 const productSchema = z.object({
   photo: z.string({
@@ -20,7 +21,7 @@ const productSchema = z.object({
   }),
 })
 
-export async function uploadProduct(_: any, formData: FormData) {
+export async function uploadProduct(formData: FormData) {
   const data = {
     photo: formData.get("photo"),
     title: formData.get("title"),
